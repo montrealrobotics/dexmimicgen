@@ -9,6 +9,7 @@ from dexmimicgen.environments.two_arm_can_sort import (
     TwoArmCanSortRed,
 )
 from dexmimicgen.environments.two_arm_coffee import TwoArmCoffee
+from dexmimicgen.environments.single_arm_drawer_cleanup import SingleArmDrawerCleanup
 from dexmimicgen.environments.two_arm_drawer_cleanup import (
     TwoArmDrawerCleanup,
 )
