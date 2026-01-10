@@ -1,0 +1,20 @@
+# Evaluation configuration for reproducible testing
+# Run multiple checkpoints with specified episodes in a single process
+
+seed: 42  # Global random seed for reproducibility
+
+evaluations:
+  - name: "pca_model_evaluation"
+    checkpoint: "../octo-small-finetune-dex-jointstate-pca-20hz_20251225_201257/"
+    env: "SingleArmDrawerCleanup"
+    episodes: 5
+    max_steps: 400
+    pca_enabled: true  # This model was trained with PCA action space reduction
+
+  Add more evaluations here:
+  - name: "baseline_model"
+    checkpoint: "../path/to/baseline/model"
+    env: "SingleArmDrawerCleanup"
+    episodes: 5
+    max_steps: 400
+    pca_enabled: false  # Set to true if model was trained with PCA
