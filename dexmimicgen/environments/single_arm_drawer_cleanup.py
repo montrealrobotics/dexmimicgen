@@ -1,3 +1,7 @@
+# Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# Licensed under the NVIDIA Source Code License [see LICENSE for details].
+
 import os
 from copy import deepcopy
 
@@ -49,6 +53,7 @@ class SingleArmDrawerCleanup(SingleArmDexMGEnv):
         camera_segmentations=None,  # {None, instance, class, element}
         renderer="mujoco",
         renderer_config=None,
+        rng=None,
         *args,
         **kwargs,
     ):
@@ -66,6 +71,8 @@ class SingleArmDrawerCleanup(SingleArmDexMGEnv):
 
         # used to check if drawer opened
         self._drawer_opened = False
+
+        self.rng = rng
 
         super().__init__(
             robots=robots,
@@ -128,6 +135,17 @@ class SingleArmDrawerCleanup(SingleArmDexMGEnv):
 
         return reward
     
+    def set_rng(self, rng):
+        """
+        Update the rng used for object placement sampling.
+        This updates both self.rng and the rng in all placement samplers.
+        """
+        self.rng = rng
+        # Update rng in all samplers
+        if hasattr(self, 'placement_initializer'):
+            for sampler in self.placement_initializer.samplers.values():
+                sampler.rng = rng
+
     @property
     def drawer_opened(self):
         return self._drawer_opened
@@ -258,6 +276,7 @@ class SingleArmDrawerCleanup(SingleArmDexMGEnv):
                 ensure_valid_placement=True,
                 reference_pos=self.table_offset,
                 z_offset=0.0,
+                rng=self.rng,
             )
         )
         self.placement_initializer.append_sampler(
@@ -275,6 +294,7 @@ class SingleArmDrawerCleanup(SingleArmDexMGEnv):
                 ensure_valid_placement=True,
                 reference_pos=self.table_offset,
                 z_offset=0.01,
+                rng=self.rng,
             )
         )
 
@@ -368,8 +388,15 @@ class SingleArmDrawerCleanup(SingleArmDexMGEnv):
         """
         language_instruction = "open and close the drawer" # Open the drawer and place the mug inside, then close the drawer.
 
+        # Get goal image (this could be an image of the completed task or initial state)
+        # For now, we'll use the current observation as a placeholder
+        goal_obs = self._get_observations()
+
         task = {
             "language_instruction": language_instruction,
+            "goal": {
+                "image_primary": goal_obs.get("agentview_image"),
+            }
         }
 
         return task

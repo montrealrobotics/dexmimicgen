@@ -126,6 +126,17 @@ class TwoArmDrawerCleanup(TwoArmDexMGEnv):
             reward *= self.reward_scale
 
         return reward
+    
+    def set_rng(self, rng):
+        """
+        Update the rng used for object placement sampling.
+        This updates both self.rng and the rng in all placement samplers.
+        """
+        self.rng = rng
+        # Update rng in all samplers
+        if hasattr(self, 'placement_initializer'):
+            for sampler in self.placement_initializer.samplers.values():
+                sampler.rng = rng
 
     def _get_drawer_model(self):
         """

@@ -51,7 +51,7 @@ def run_batch_evaluation(config_path, verbose=True):
     all_results = {}
 
     # Run each evaluation
-    for eval_config in config['evaluations']:
+    for eval_idx, eval_config in enumerate(config['evaluations']):
         eval_name = eval_config['name']
         checkpoint_path = eval_config['checkpoint']
         env_name = eval_config['env']
@@ -59,19 +59,22 @@ def run_batch_evaluation(config_path, verbose=True):
         max_steps = eval_config.get('max_steps', 400)
         pca_enabled = eval_config.get('pca_enabled', False)
 
+        # Create evaluation-specific seed for reproducibility
+        eval_seed = global_seed + eval_idx
+
         if verbose:
             print(f"\n--- Evaluation: {eval_name} ---")
             print(f"Checkpoint: {checkpoint_path}")
             print(f"Environment: {env_name}")
             print(f"Episodes: {num_episodes}, Max Steps: {max_steps}")
             print(f"PCA Enabled: {pca_enabled}")
-            print(f"Calling evaluate_octo_checkpoint with pca_enabled={pca_enabled}")
+            print(f"Evaluation seed: {eval_seed}")
 
         try:
-            # Import here to ensure proper initialization after seeding
+            # Import here to ensure proper initialization
             from eval_octo_checkpoint_cli import evaluate_octo_checkpoint
 
-            # Run evaluation
+            # Run evaluation (evaluate_octo_checkpoint handles all seeding internally)
             results = evaluate_octo_checkpoint(
                 checkpoint_path=checkpoint_path,
                 env_name=env_name,
@@ -80,7 +83,7 @@ def run_batch_evaluation(config_path, verbose=True):
                 render=False,
                 save_video=False,
                 verbose=verbose,
-                seed=global_seed,
+                seed=eval_seed,
                 pca_enabled=pca_enabled
             )
 
