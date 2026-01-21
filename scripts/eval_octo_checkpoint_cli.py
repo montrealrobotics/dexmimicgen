@@ -261,18 +261,9 @@ def evaluate_octo_checkpoint(
     # Set comprehensive seeds for reproducible evaluation
     random.seed(seed)
     np.random.seed(seed)
-    rng = np.random.default_rng(seed)
-
-    # Set CUDA deterministic mode for reproducibility (if CUDA is available)
-    os.environ['CUDA_LAUNCH_BLOCKING'] = '1'  # Forces deterministic CUDA kernel launches
-    os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':4096:8'  # Deterministic cuBLAS operations
-
-    # Additional determinism settings
-    os.environ['MUJOCO_GL'] = 'disable'  # Disable OpenGL rendering determinism issues
 
     # Create a deterministic JAX key for reproducible model sampling
     jax_key = jax.random.PRNGKey(seed)
-
 
     if not OCTO_AVAILABLE:
         raise RuntimeError("Octo is not available. Please install Octo and update the path.")

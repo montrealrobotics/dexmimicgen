@@ -99,6 +99,7 @@ class SingleArmDrawerCleanup(SingleArmDexMGEnv):
             camera_segmentations=camera_segmentations,
             renderer=renderer,
             renderer_config=renderer_config,
+            language_instruction="open and close the drawer",
             *args,
             **kwargs,
         )
@@ -378,28 +379,6 @@ class SingleArmDrawerCleanup(SingleArmDexMGEnv):
         drawer_closed = self._check_drawer_close()
 
         return self._drawer_opened and drawer_closed
-
-    def get_task(self):
-        """
-        Return task specification with language instruction and goal information.
-
-        Returns:
-            dict: Task specification containing language instruction and goal.
-        """
-        language_instruction = "open and close the drawer" # Open the drawer and place the mug inside, then close the drawer.
-
-        # Get goal image (this could be an image of the completed task or initial state)
-        # For now, we'll use the current observation as a placeholder
-        goal_obs = self._get_observations()
-
-        task = {
-            "language_instruction": language_instruction,
-            "goal": {
-                "image_primary": goal_obs.get("agentview_image"),
-            }
-        }
-
-        return task
 
     def visualize(self, vis_settings):
         """

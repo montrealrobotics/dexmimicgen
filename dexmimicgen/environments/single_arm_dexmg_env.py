@@ -10,9 +10,10 @@ import dexmimicgen.utils.transform_utils as T
 
 
 class SingleArmDexMGEnv(ManipulationEnv):
-    def __init__(self, translucent_robot=False, *args, **kwargs):
+    def __init__(self, language_instruction, translucent_robot=False, *args, **kwargs):
 
         self.translucent_robot = translucent_robot
+        self.language_instruction = language_instruction
         super().__init__(*args, **kwargs)
 
     @property
@@ -108,6 +109,19 @@ class SingleArmDexMGEnv(ManipulationEnv):
         xml = self.sim.model.get_xml()  # model xml file
         state = np.array(self.sim.get_state().flatten())  # simulator state
         return dict(model=xml, states=state)
+    
+    def get_task(self):
+        """
+        Return task specification with language instruction and goal information.
+
+        Returns:
+            dict: Task specification containing language instruction and goal.
+        """
+        task = {
+            "language_instruction": self.language_instruction,
+        }
+
+        return task
 
     def edit_model_xml(self, xml_str):
         """
